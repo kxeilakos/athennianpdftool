@@ -23,6 +23,17 @@ $(document).ready(function () {
 		};
 		CallWS("POST", url, "json", request, "application/json;charset=utf-8", concatFileSuccessClb, concatFileErrorClb);
 	});
+
+	var concatenateWithContnetsBtn = $('#concatenateWithContnetsBtn');
+	concatenateWithContnetsBtn.click(function () {
+		var fileName = $('#fileNameWithContentsConc').val();
+
+		var url = "/api/values/ConcatenateWithContents";
+		var request = {
+			filename: fileName
+		};
+		CallWS("POST", url, "json", request, "application/json;charset=utf-8", concatFileSuccessClb, concatFileErrorClb);
+	});
 });
 
 function concatFileSuccessClb(response) {
