@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Aspose.Pdf;
@@ -77,51 +78,82 @@ namespace AsposeNetCore20.Controllers
 
 			PdfFileEditor pdfEditor = new PdfFileEditor();
 
-			List<System.IO.Stream> pdfStreams = new List<System.IO.Stream>();
-			string[] files = System.IO.Directory.GetFiles(outputDir);
-			foreach (string file in files)
+			using (MemoryStream Concatenated_Stream = new MemoryStream())
 			{
-				System.IO.FileStream stream = new System.IO.FileStream(file, System.IO.FileMode.Open);
-				pdfStreams.Add(stream);
+
+				List<System.IO.Stream> pdfStreams = new List<System.IO.Stream>();
+				string[] files = System.IO.Directory.GetFiles(outputDir);
+				foreach (string file in files)
+				{
+					System.IO.FileStream stream = new System.IO.FileStream(file, System.IO.FileMode.Open);
+					pdfStreams.Add(stream);
+				}
+
+				System.IO.FileStream outputPDF = new System.IO.FileStream(outputConcDir + request.filename + ".pdf", System.IO.FileMode.Create);
+
+				pdfEditor.Concatenate(pdfStreams.ToArray(), Concatenated_Stream);
+
+				// Insert a blank page at the begining of concatenated file to display Table of Contents
+				Aspose.Pdf.Document concatenated_pdfDocument = new Aspose.Pdf.Document(Concatenated_Stream);
+				// Insert a empty page in a PDF
+				concatenated_pdfDocument.Pages.Insert(1);
+
+				using (MemoryStream Document_With_BlankPage = new MemoryStream())
+				{
+
+					// Save output file
+					concatenated_pdfDocument.Save(Document_With_BlankPage);
+
+					using (var Document_with_TOC_Heading = new MemoryStream())
+					{
+						// Add Table Of Contents logo as stamp to PDF file
+						PdfFileStamp fileStamp = new PdfFileStamp();
+						// Find the input file
+						fileStamp.BindPdf(Document_With_BlankPage);
+
+						// Set Text Stamp to display string Table Of Contents
+						Aspose.Pdf.Facades.Stamp stamp = new Aspose.Pdf.Facades.Stamp();
+						stamp.BindLogo(new FormattedText("Table Of Contents", System.Drawing.Color.Maroon, System.Drawing.Color.Transparent, Aspose.Pdf.Facades.FontStyle.Helvetica, EncodingType.Winansi, true, 18));
+						// Specify the origin of Stamp. We are getting the page width and specifying the X coordinate for stamp
+						stamp.SetOrigin((new PdfFileInfo(Document_With_BlankPage).GetPageWidth(1) / 3), 700);
+						// Set particular pages
+						stamp.Pages = new int[] { 1 };
+						// Add stamp to PDF file
+						fileStamp.AddStamp(stamp);
+
+						int counter = 1;
+						int diff = 0;
+						foreach (System.IO.Stream stream in pdfStreams)
+						{
+							var Document_Link = new Aspose.Pdf.Facades.Stamp();
+							Document_Link.BindLogo(new FormattedText(counter + " - Link to Document " + counter, System.Drawing.Color.Black, System.Drawing.Color.Transparent, Aspose.Pdf.Facades.FontStyle.Helvetica, EncodingType.Winansi, true, 12));
+							Document_Link.SetOrigin(150, 650 - diff);
+							Document_Link.Pages = new int[] { 1 };
+							fileStamp.AddStamp(Document_Link);
+							counter++;
+							diff += 40;
+						}
+
+						fileStamp.Save(Document_with_TOC_Heading);
+						fileStamp.Close();
+
+						PdfContentEditor contentEditor = new PdfContentEditor();
+						// Bind the PDF file in which we added the blank page
+						contentEditor.BindPdf(Document_with_TOC_Heading);
+
+						counter = 1;
+						diff = 0;
+						foreach (System.IO.Stream stream in pdfStreams)
+						{
+							contentEditor.CreateLocalLink(new System.Drawing.Rectangle(150, 650 - diff, 100, 20), counter +1, 1, System.Drawing.Color.Transparent);
+							counter++;
+							diff += 40;
+						}
+
+						contentEditor.Save(outputConcDir + "Concatenated_Table_Of_Contents.pdf");
+					}
+				}
 			}
-
-			System.IO.FileStream outputPDF = new System.IO.FileStream(outputConcDir + request.filename + ".pdf", System.IO.FileMode.Create);
-
-			pdfEditor.Concatenate(pdfStreams.ToArray(), outputPDF);
-
-			//Instantiate a new PDF Document
-			Aspose.Pdf.Document concatenated_pdfDocument = new Aspose.Pdf.Document(outputPDF);
-			//Insert a new blank page at the beginning
-			concatenated_pdfDocument.Pages.Insert(1);
-
-			// Set Text Stamp to display string Table Of Contents
-			Aspose.Pdf.Facades.Stamp stamp = new Aspose.Pdf.Facades.Stamp();
-			FormattedText formattedText = new FormattedText("Table Of Contents", System.Drawing.Color.Black, System.Drawing.Color.Red, Aspose.Pdf.Facades.FontStyle.Helvetica, EncodingType.Winansi, true, 18);
-			stamp.BindLogo(formattedText);
-
-
-			PdfContentEditor contentEditor = new PdfContentEditor();
-			contentEditor.BindPdf(concatenated_pdfDocument);
-
-			//Set origin for every file that has been concatenated
-			int counter = 1;
-			foreach (System.IO.Stream stream in pdfStreams)
-			{
-				stamp.SetOrigin((new PdfFileInfo(stream).GetPageWidth(1) / 3), 700);
-				stamp.Pages = new int[] { 1 };
-				//if(counter == 0)
-				//{
-					//contentEditor.CreateLocalLink(new System.Drawing.Rectangle(150, 650, 100, 20), 2, 1, System.Drawing.Color.Transparent);
-				//}
-				//else
-				//{
-					contentEditor.CreateLocalLink(new System.Drawing.Rectangle(150, 620, 100, 20), new PdfFileInfo(stream).NumberOfPages + 1, 1, System.Drawing.Color.Transparent);
-				//}
-				counter++;
-			}
-
-			outputPDF.Close();
-			contentEditor.Save(outputConcDir + request.filename+ "withTableOfContents.pdf");
 
 			return "Files Concatenated Successfully with Talbe Of Contents";
 		}
