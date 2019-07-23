@@ -1,4 +1,5 @@
-﻿$(document).ready(function () {
+﻿
+$(document).ready(function () {
 	var createHWBtn = $('#createHWBtn');
 	createHWBtn.click(function () {
 		var fileName = $('#fileName').val();
@@ -9,7 +10,7 @@
 			filename: fileName,
 			filetext: fileText
 		};
-		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileSuccessClb);
+		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileSuccessClb, createFileErrorClb);
 	});
 
 	var concatenateBtn = $('#concatenateBtn');
@@ -20,13 +21,24 @@
 		var request = {
 			filename: fileName
 		};
-		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileSuccessClb);
+		CallWS("POST", url, "json", request, "application/json;charset=utf-8", concatFileSuccessClb, concatFileErrorClb);
 	});
-
 });
+
+function concatFileSuccessClb(response) {
+	console.log(response);
+	alert("Files Concatenated successfully");
+}
+function concatFileErrorClb(response) {
+	alert("Files Concatenated successfully");
+}
 
 function createFileSuccessClb(response) {
 	console.log(response);
+	alert("File created successfully");
+}
+function createFileErrorClb(response) {
+	alert("File created successfully");
 }
 
 function CallWS(type, url, dataType, request, contentType, callback) {
@@ -42,10 +54,10 @@ function CallWS(type, url, dataType, request, contentType, callback) {
 			if (callback) callback(data);
 		},
 		failure: function (data) {
-			console.log(data);
+			alert("File created successfully");
 		},
 		error: function (data) {
-			console.log(data);
+			alert("File created successfully");
 		}
 
 	});

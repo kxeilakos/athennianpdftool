@@ -32,7 +32,7 @@ namespace AsposeNetCore20.Controllers
 		// POST api/values
 		[HttpPost]
 		[Route("CreateFile")]
-		public void CreateFile([FromBody] Request request)
+		public ActionResult<string> CreateFile([FromBody] Request request)
 		{
 			System.IO.Directory.CreateDirectory(outputDir);
 
@@ -41,11 +41,13 @@ namespace AsposeNetCore20.Controllers
 
 			page.Paragraphs.Add(new Aspose.Pdf.Text.TextFragment(request.filetext));
 			document.Save(outputDir + request.filename + ".pdf");
+
+			return "File Created Successfully";
 		}
 
 		[HttpPost]
 		[Route("Concatenate")]
-		public void Concatenate([FromBody] Request request)
+		public ActionResult<string> Concatenate([FromBody] Request request)
 		{
 			System.IO.Directory.CreateDirectory(outputConcDir);
 
@@ -59,10 +61,12 @@ namespace AsposeNetCore20.Controllers
 				pdfStreams.Add(stream);
 			}
 
-			System.IO.FileStream outputPDF = new System.IO.FileStream(request.filename + ".pdf", System.IO.FileMode.Create);
+			System.IO.FileStream outputPDF = new System.IO.FileStream(outputConcDir + request.filename + ".pdf", System.IO.FileMode.Create);
 
 			pdfEditor.Concatenate(pdfStreams.ToArray(), outputPDF );
 			outputPDF.Close();
+
+			return "Files Concatenated Successfully";
 		}
 
 		// PUT api/values/5
