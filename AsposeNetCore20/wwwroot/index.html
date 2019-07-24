@@ -17,8 +17,9 @@
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
 			integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
 			crossorigin="anonymous"></script>
-	
+
 	<script src="utilties.js" type="text/javascript"></script>
+	<link href="styles.css" rel="stylesheet" type="text/css" />
 	<title>Aspose.PDF Test Project</title>
 </head>
 <body>
@@ -31,7 +32,7 @@
 		</div>
 		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
 			<div class="col-3">
-				<p style="font-weight:bold">Create PDF file at local directory: <br> C:\AsposePDF\Files </p>
+				<p style="font-weight:bold">Create PDF file at local directory: C:\AsposePDF\Files </p>
 			</div>
 			<div class="col-3">
 				<input type="text" class="form-control" id="fileName" placeholder="Source file name" />
@@ -45,13 +46,15 @@
 		</div>
 		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
 			<div class="col-3">
-				<p style="font-weight:bold">Concatenate Files at local directory: <br> C:\AsposePDF\Concatenated</p>
+				<p style="font-weight:bold">Concatenate Files at local directory: C:\AsposePDF\Concatenated</p>
 			</div>
 			<div class="col-3">
 				<input type="text" class="form-control" id="fileNameConc" placeholder="Destination file name" />
 			</div>
 			<div class="col-4">
-				<input type="text" class="form-control" id="fileTextConc" placeholder="Destination file name" style="visibility:hidden" />
+				<div id="ath-spinner-1" class="loader disp-n" style="text-align:center;margin:auto">
+
+				</div>
 			</div>
 			<div class="col-2">
 				<button class="btn btn-primary" id="concatenateBtn" style="width:150px;">Concatenate Files</button>
@@ -59,16 +62,34 @@
 		</div>
 		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
 			<div class="col-3">
-				<p style="font-weight:bold">Concatenate Files <span style="color:red">with Table Of Contents</span> at local directory: <br> C:\AsposePDF\Concatenated</p>
+				<p style="font-weight:bold">Concatenate Files at local directory C:\AsposePDF\Concatenated <span style="color:red"> with Table Of Contents</span></p>
 			</div>
 			<div class="col-3">
 				<input type="text" class="form-control" id="fileNameWithContentsConc" placeholder="Destination file name" />
 			</div>
 			<div class="col-4">
-				<input type="text" class="form-control" id="fileTextWithContentsConc" placeholder="Destination file name" style="visibility:hidden" />
+				<div id="ath-spinner-2" class="loader disp-n" style="text-align:center;margin:auto">
+
+				</div>
 			</div>
 			<div class="col-2">
 				<button class="btn btn-primary" id="concatenateWithContnetsBtn" style="width:150px;">Concatenate Files</button>
+			</div>
+		</div>
+		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
+			<div class="col-3">
+				<p style="font-weight:bold">Create PDF file at local directory: C:\AsposePDF\NestedBookmarks <span style="font-weight:bold;color:red">with Nested Bookmarks</span></p>
+			</div>
+			<div class="col-3">
+				<input type="text" class="form-control" id="fileNameNB" placeholder="Source file name" />
+			</div>
+			<div class="col-4">
+				<div id="ath-spinner-3" class="loader disp-n" style="text-align:center;margin:auto">
+
+				</div>
+			</div>
+			<div class="col-2">
+				<button class="btn btn-primary" id="createNBBtn" style="width:150px;">Create File</button>
 			</div>
 		</div>
 	</div>
