@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace AsposeNetCore20.Model
 {
-	public class Request
+	public class Response
 	{
-		public string filename { get; set; }
-		public string filetext { get; set; }
-		public string filecontent { get; set; }
+		public string FileContent { get; set; }
+		public string FileName { get; set; }
+		public string Message { get; set; }
 	}
 }

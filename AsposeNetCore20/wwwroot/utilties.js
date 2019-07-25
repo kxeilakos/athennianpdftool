@@ -1,7 +1,57 @@
-﻿
+﻿//Constants
+
+// Local: "https://localhost:44340/"
+// Azure: ""
+
+var baseUrl = "https://localhost:44340/files/";
+var baseUrlUpload = "https://localhost:44340/";
+
+var targetModes = {
+	Blank: "_blank",
+	Parent: "_parent"
+};
+
 $(document).ready(function () {
+
+	$('#browseFileBtn').click(function () {
+		$(this).parent().find('input[type=file]').click();
+	});
+	$('#inputFileTxt').change(function () {
+		$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());
+	});
+
+	$('#uploadFileBtn').click(function () {
+		showSpinner1();
+		var fileName = GetFileName();
+
+		// Add a delay to ensure that file reader will have read file before posting it
+		var ready = false;
+		var result = '';
+		var check = function () {
+			if (ready === true) {
+				uploadFile(fileName, result);
+				return;
+			}
+			setTimeout(check, 700);
+		};
+
+		check();
+
+		var fileReader = new FileReader();
+		fileReader.onloadend = function (evt) {
+			// file is loaded
+			result = evt.target.result;
+
+			ready = true;
+		};
+		fileReader.readAsDataURL(fileName);
+
+	});
+
 	var createHWBtn = $('#createHWBtn');
 	createHWBtn.click(function () {
+		showSpinner0();
+		$('#createResponseMsg').text("");
 		var fileName = $('#fileName').val();
 		var fileText = $('#fileText').val();
 
@@ -10,7 +60,7 @@ $(document).ready(function () {
 			filename: fileName,
 			filetext: fileText
 		};
-		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileSuccessClb, createFileErrorClb);
+		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileSuccessClb);
 	});
 
 	var concatenateBtn = $('#concatenateBtn');
@@ -22,7 +72,7 @@ $(document).ready(function () {
 		var request = {
 			filename: fileName
 		};
-		CallWS("POST", url, "json", request, "application/json;charset=utf-8", concatFileSuccessClb, concatFileErrorClb);
+		CallWS("POST", url, "json", request, "application/json;charset=utf-8", concatFileSuccessClb);
 	});
 
 	var concatenateWithContnetsBtn = $('#concatenateWithContnetsBtn');
@@ -50,48 +100,73 @@ $(document).ready(function () {
 	});
 });
 
-function concatFileSuccessClb(response) {
-	hideSpinner1();
-	hideSpinner2();
-	hideSpinner3();
-	console.log(response);
-	alert("Files Concatenated successfully");
-}
-function concatFileErrorClb(response) {
-	hideSpinner1();
-	hideSpinner2();
-	hideSpinner3();
-	alert("Files Concatenated successfully");
+// HELPERS
+function GetFileName() {
+	return $('#inputFileTxt')[0].files[0];
 }
 
-function createFileSuccessClb(response) {
-	hideSpinner1();
-	hideSpinner2();
-	hideSpinner3();
-	console.log(response);
-	alert("File created successfully");
+function uploadFile(fileName, base64CodedImg) {
+	var ready = false;
+	var check = function () {
+		if (ready === true) {
+			var type = 'POST';
+			var contentType = 'application/json';
+			var url =  '/api/values/UploadFile';
+			var data = {
+				filename: fileName.name,
+				filecontent: base64CodedImg
+			};
+			var dataType = '';
+			CallWS("POST", url, "json", data, "application/json;charset=utf-8", concatFileSuccessClb);
+			return;
+		}
+		setTimeout(check, 700);
+	};
+	check();
+	var fileReader = new FileReader();
+	fileReader.onloadend = function (evt) {
+		result = evt.target.result;
+		ready = true;
+	};
+	fileReader.readAsDataURL(fileName);
 }
-function createFileErrorClb(response) {
-	hideSpinner1();
-	hideSpinner2();
-	hideSpinner3();
-	alert("File created successfully");
+
+// CALLBACKS
+function createFileSuccessClb(response) {
+	hideSpinners();
+
+	$('#createResponseMsg').text(response.message);
+	var url = baseUrl + response.fileName;
+	window.open(url, targetModes.Blank);
+}
+
+function concatFileSuccessClb(response) {
+	hideSpinners();
+	$('#uploadResponseMsg').text(response.Message);
 }
 
 function createFileNBSuccessClb(response) {
-	hideSpinner1();
-	hideSpinner2();
-	hideSpinner3();
+	hideSpinners();
 	console.log(response);
 	alert("File created successfully");
 }
-function createFileNBErrorClb(response) {
-	hideSpinner1();
-	hideSpinner2();
-	hideSpinner3();
+
+function concatFileErrorClb(response) {
+	hideSpinners();
+	alert("Error!");
+}
+
+function createFileErrorClb(response) {
+	hideSpinners();
 	alert("File created successfully");
 }
 
+function createFileNBErrorClb(response) {
+	hideSpinners();
+	alert("File created successfully");
+}
+
+// CALLWS
 function CallWS(type, url, dataType, request, contentType, callback) {
 
 	$.ajax({
@@ -123,6 +198,13 @@ function CallWS(type, url, dataType, request, contentType, callback) {
 	});
 }
 
+// SHOW / HIDE ELEMENTS
+function showSpinner0() {
+	$('#ath-spinner-0').show();
+}
+function hideSpinner0() {
+	$('#ath-spinner-0').hide();
+}
 function showSpinner1() {
 	$('#ath-spinner-1').show();
 }
@@ -140,4 +222,10 @@ function showSpinner3() {
 }
 function hideSpinner3() {
 	$('#ath-spinner-3').hide();
+}
+function hideSpinners() {
+	hideSpinner0();	
+	hideSpinner1();
+	hideSpinner2();
+	hideSpinner3();
 }

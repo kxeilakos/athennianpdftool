@@ -22,6 +22,8 @@ namespace AsposeNetCore20.Controllers
 		private const string outputConcDir = @"C:\AsposePDF\Concatenated\";
 		private const string outputDirNestedBookmarks = @"C:\AsposePDF\NestedBookmarks\";
 
+		private const string serverDirectory = @"wwwroot\files\";
+
 		// GET api/values
 		[HttpGet]
 		public ActionResult<string> Get()
@@ -39,7 +41,7 @@ namespace AsposeNetCore20.Controllers
 		// POST api/values
 		[HttpPost]
 		[Route("CreateFile")]
-		public ActionResult<string> CreateFile([FromBody] Request request)
+		public ActionResult<Response> CreateFile([FromBody] Request request)
 		{
 			System.IO.Directory.CreateDirectory(outputDir);
 
@@ -47,9 +49,38 @@ namespace AsposeNetCore20.Controllers
 			Page page = document.Pages.Add();
 
 			page.Paragraphs.Add(new Aspose.Pdf.Text.TextFragment(request.filetext));
-			document.Save(outputDir + request.filename + ".pdf");
+			document.Save(serverDirectory + request.filename + ".pdf");
 
-			return "File Created Successfully";
+			return new Response()
+			{
+				FileContent = string.Empty,
+				FileName = string.IsNullOrEmpty(request.filename) ? Guid.NewGuid().ToString() + ".pdf" : request.filename + ".pdf",
+				Message = "File created successfully"
+			};
+		}
+
+		[HttpPost]
+		[Route("UploadFile")]
+		public ActionResult<Response> UploadFile([FromBody] Request request)
+		{
+			System.IO.Directory.CreateDirectory(outputConcDir);
+
+			PdfFileEditor pdfEditor = new PdfFileEditor();
+
+			Byte[] bitmapData = Convert.FromBase64String(request.filecontent.Split(",").Last());
+			System.IO.MemoryStream streamBitmap = new System.IO.MemoryStream(bitmapData);
+
+			System.IO.FileStream outputPDF = new System.IO.FileStream(serverDirectory + request.filename, System.IO.FileMode.Create);
+
+			pdfEditor.Concatenate(new System.IO.MemoryStream[] { streamBitmap } , outputPDF);
+			outputPDF.Close();
+
+			return new Response()
+			{
+				FileContent = string.Empty,
+				FileName = string.Empty,
+				Message = "File Uploaded successfully"
+			};
 		}
 
 		[HttpPost]

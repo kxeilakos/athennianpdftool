@@ -31,33 +31,46 @@
 			<hr />
 		</div>
 		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
-			<div class="col-3">
-				<p style="font-weight:bold">Create PDF file at local directory: C:\AsposePDF\Files </p>
+			<div class="col-2">
+				<p style="font-weight:bold">Create PDF file with Custom Text</p>
 			</div>
-			<div class="col-3">
+			<div class="col-2">
 				<input type="text" class="form-control" id="fileName" placeholder="Source file name" />
 			</div>
 			<div class="col-4">
 				<textarea class="form-control" id="fileText" rows="3" placeholder="Source file text"></textarea>
 			</div>
 			<div class="col-2">
+				<span id="createResponseMsg"></span>
+				<div id="ath-spinner-0" class="loader disp-n" style="text-align:center;margin:auto">
+
+				</div>
+			</div>
+			<div class="col-2">
 				<button class="btn btn-primary" id="createHWBtn" style="width:150px;">Create Pdf</button>
 			</div>
 		</div>
 		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
-			<div class="col-3">
-				<p style="font-weight:bold">Concatenate Files at local directory: C:\AsposePDF\Concatenated</p>
-			</div>
-			<div class="col-3">
-				<input type="text" class="form-control" id="fileNameConc" placeholder="Destination file name" />
+			<div class="col-2">
+				<p style="font-weight:bold">Upload file</p>
 			</div>
 			<div class="col-4">
+				<div class="input-group">
+					<span class="input-group-btn">
+						<span id="browseFileBtn" class="btn btn-primary" style="background-color: #1E6DFB !important;">Browse</span>
+						<input id="inputFileTxt" style="display:none" type="file">
+					</span>
+					<span class="form-control"></span>
+				</div>
+			</div>
+			<div class="col-4">
+				<span id="uploadResponseMsg"></span>
 				<div id="ath-spinner-1" class="loader disp-n" style="text-align:center;margin:auto">
 
 				</div>
 			</div>
 			<div class="col-2">
-				<button class="btn btn-primary" id="concatenateBtn" style="width:150px;">Concatenate Files</button>
+				<button class="btn btn-primary" id="uploadFileBtn" style="width:150px;">Upload File</button>
 			</div>
 		</div>
 		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
@@ -69,14 +82,14 @@
 			</div>
 			<div class="col-4">
 				<div id="ath-spinner-2" class="loader disp-n" style="text-align:center;margin:auto">
-
+					<span id="concatenateResponseMsg"></span>
 				</div>
 			</div>
 			<div class="col-2">
 				<button class="btn btn-primary" id="concatenateWithContnetsBtn" style="width:150px;">Concatenate Files</button>
 			</div>
 		</div>
-		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
+		<div class="row disp-n" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
 			<div class="col-3">
 				<p style="font-weight:bold">Create PDF file at local directory: C:\AsposePDF\NestedBookmarks <span style="font-weight:bold;color:red">with Nested Bookmarks</span></p>
 			</div>
@@ -85,7 +98,7 @@
 			</div>
 			<div class="col-4">
 				<div id="ath-spinner-3" class="loader disp-n" style="text-align:center;margin:auto">
-
+					
 				</div>
 			</div>
 			<div class="col-2">
