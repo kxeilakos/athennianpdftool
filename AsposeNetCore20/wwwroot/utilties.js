@@ -1,10 +1,13 @@
 ﻿//Constants
 
-// Local: "https://localhost:44340/"
-// Azure: ""
+// Local: "https://localhost:44340/"   & 
+// Azure: "https://athennianasposepdftool.azurewebsites.net/"
 
-var baseUrl = "https://localhost:44340/files/";
+var baseUrl = "https://localhost:44340/";
 var baseUrlUpload = "https://localhost:44340/";
+
+//var baseUrl = "https://athennianasposepdftool.azurewebsites.net/";
+//var baseUrlUpload = "https://athennianasposepdftool.azurewebsites.net/";
 
 var targetModes = {
 	Blank: "_blank",
@@ -21,8 +24,15 @@ $(document).ready(function () {
 	});
 
 	$('#uploadFileBtn').click(function () {
-		showSpinner1();
 		var fileName = GetFileName();
+		if (fileName === undefined) {
+			setUploadResponseMessage("Please Select a file");
+			return;
+		}
+
+		setUploadResponseMessage("");
+		showSpinner1();
+		
 
 		// Add a delay to ensure that file reader will have read file before posting it
 		var ready = false;
@@ -50,11 +60,16 @@ $(document).ready(function () {
 
 	var createHWBtn = $('#createHWBtn');
 	createHWBtn.click(function () {
-		showSpinner0();
-		$('#createResponseMsg').text("");
 		var fileName = $('#fileName').val();
 		var fileText = $('#fileText').val();
 
+		if (!fileName.length > 0) {
+			setCreateResponseMessage("File Name is Required");
+			return;
+		}
+		showSpinner0();
+		setCreateResponseMessage("");
+		
 		var url = "/api/values/CreateFile";
 		var request = {
 			filename: fileName,
@@ -77,6 +92,7 @@ $(document).ready(function () {
 
 	var concatenateWithContnetsBtn = $('#concatenateWithContnetsBtn');
 	concatenateWithContnetsBtn.click(function () {
+		setConcatResponseMessage("");
 		showSpinner2();
 		var fileName = $('#fileNameWithContentsConc').val();
 
@@ -87,17 +103,17 @@ $(document).ready(function () {
 		CallWS("POST", url, "json", request, "application/json;charset=utf-8", concatFileSuccessClb, concatFileErrorClb);
 	});
 
-	var createNBBtn = $('#createNBBtn');
-	createNBBtn.click(function () {
-		showSpinner3();
-		var fileName = $('#fileNameNB').val();
+	//var createNBBtn = $('#createNBBtn');
+	//createNBBtn.click(function () {
+	//	showSpinner3();
+	//	var fileName = $('#fileNameNB').val();
 
-		var url = "/api/values/CreateFileWithNB";
-		var request = {
-			filename: fileName
-		};
-		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileNBSuccessClb, createFileNBErrorClb);
-	});
+	//	var url = "/api/values/CreateFileWithNB";
+	//	var request = {
+	//		filename: fileName
+	//	};
+	//	CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileNBSuccessClb, createFileNBErrorClb);
+	//});
 });
 
 // HELPERS
@@ -117,7 +133,7 @@ function uploadFile(fileName, base64CodedImg) {
 				filecontent: base64CodedImg
 			};
 			var dataType = '';
-			CallWS("POST", url, "json", data, "application/json;charset=utf-8", concatFileSuccessClb);
+			CallWS("POST", url, "json", data, "application/json;charset=utf-8", uploadFileSuccessClb);
 			return;
 		}
 		setTimeout(check, 700);
@@ -135,36 +151,54 @@ function uploadFile(fileName, base64CodedImg) {
 function createFileSuccessClb(response) {
 	hideSpinners();
 
-	$('#createResponseMsg').text(response.message);
-	var url = baseUrl + response.fileName;
-	window.open(url, targetModes.Blank);
+	setCreateResponseMessage(response.message);
+
+	if (response.success) {
+		var url = baseUrl + response.fileName;
+		window.open(url, targetModes.Blank);
+	} 
 }
 
 function concatFileSuccessClb(response) {
 	hideSpinners();
-	$('#uploadResponseMsg').text(response.Message);
+	setConcatResponseMessage(response.message);
+
+	if (response.success) {
+		var url = baseUrl + response.fileName;
+		window.open(url, targetModes.Blank);
+	}
 }
 
-function createFileNBSuccessClb(response) {
+function uploadFileSuccessClb(response) {
 	hideSpinners();
-	console.log(response);
-	alert("File created successfully");
+	setUploadResponseMessage(response.message);
 }
+
+//function createFileNBSuccessClb(response) {
+//	hideSpinners();
+//	console.log(response);
+//	alert("File created successfully");
+//}
 
 function concatFileErrorClb(response) {
 	hideSpinners();
-	alert("Error!");
+	setConcatResponseMessage("Could not Concatenate files!");
 }
 
 function createFileErrorClb(response) {
 	hideSpinners();
-	alert("File created successfully");
+	setCreateResponseMessage("Could not Create File!");
 }
 
-function createFileNBErrorClb(response) {
+function uploadFileErrorClb(response) {
 	hideSpinners();
-	alert("File created successfully");
+	setCreateResponseMessage("Could not Create File!");
 }
+
+//function createFileNBErrorClb(response) {
+//	hideSpinners();
+//	alert("Error!");
+//}
 
 // CALLWS
 function CallWS(type, url, dataType, request, contentType, callback) {
@@ -176,25 +210,18 @@ function CallWS(type, url, dataType, request, contentType, callback) {
 		dataType: dataType,
 		data: JSON.stringify(request),
 		success: function (data) {
-			hideSpinner1();
-			hideSpinner2();
-			hideSpinner3();
-			console.log(data);
+			hideSpinners();
+			
 			if (callback) callback(data);
 		},
 		failure: function (data) {
-			hideSpinner1();
-			hideSpinner2();
-			hideSpinner3();
-			alert("File created successfully");
+			hideSpinners();
+			alert("Error!");
 		},
 		error: function (data) {
-			hideSpinner1();
-			hideSpinner2();
-			hideSpinner3();
-			alert("File created successfully");
+			hideSpinners();
+			alert("Error");
 		}
-
 	});
 }
 
@@ -228,4 +255,13 @@ function hideSpinners() {
 	hideSpinner1();
 	hideSpinner2();
 	hideSpinner3();
+}
+function setCreateResponseMessage(message) {
+	$('#createResponseMsg').text(message);
+}
+function setUploadResponseMessage(message) {
+	$('#uploadResponseMsg').text(message);
+}
+function setConcatResponseMessage(message) {
+	$('#concatenateResponseMsg').text(message);
 }
