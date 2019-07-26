@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Aspose.Pdf;
+﻿using Aspose.Pdf;
 using Aspose.Pdf.Facades;
 using AsposeNetCore20.Model;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Net.Http.Headers;
+using System.Linq;
+using System.Diagnostics;
 
 namespace AsposeNetCore20.Controllers
 {
@@ -139,9 +135,11 @@ namespace AsposeNetCore20.Controllers
 		[Route("ConcatenateWithContents")]
 		public ActionResult<Response> ConcatenateWithContents([FromBody] Request request)
 		{
-
 			try
 			{
+				Stopwatch stopwatch1 = new Stopwatch();
+				stopwatch1.Start();
+
 				PdfFileEditor pdfEditor = new PdfFileEditor();
 
 				using (MemoryStream Concatenated_Stream = new MemoryStream())
@@ -161,8 +159,13 @@ namespace AsposeNetCore20.Controllers
 					}
 
 					//System.IO.FileStream outputPDF = new System.IO.FileStream(serverDirectory + request.filename + ".pdf", System.IO.FileMode.Create);
+					Stopwatch stopwatch2 = new Stopwatch();
+					stopwatch2.Start();
 
 					pdfEditor.Concatenate(pdfStreams.ToArray(), Concatenated_Stream);
+
+					stopwatch2.Stop();
+					Console.WriteLine("PdfEditor.Concatenate Action: " + stopwatch2.ElapsedMilliseconds.ToString());
 
 					// Insert a blank page at the begining of concatenated file to display Table of Contents
 					Aspose.Pdf.Document concatenated_pdfDocument = new Aspose.Pdf.Document(Concatenated_Stream);
@@ -173,7 +176,13 @@ namespace AsposeNetCore20.Controllers
 					{
 
 						// Save output file
+
+						stopwatch2.Reset();
+						stopwatch2.Start();
 						concatenated_pdfDocument.Save(Document_With_BlankPage);
+
+						stopwatch2.Stop();
+						Console.WriteLine("Concatenated_pdfDocument.Save Action: " + stopwatch2.ElapsedMilliseconds.ToString());
 
 						using (var Document_with_TOC_Heading = new MemoryStream())
 						{
@@ -190,7 +199,13 @@ namespace AsposeNetCore20.Controllers
 							// Set particular pages
 							stamp.Pages = new int[] { 1 };
 							// Add stamp to PDF file
+
+							stopwatch2.Reset();
+							stopwatch2.Start();
 							fileStamp.AddStamp(stamp);
+
+							stopwatch2.Stop();
+							Console.WriteLine("FileStamp.AddStamp Action: " + stopwatch2.ElapsedMilliseconds.ToString());
 
 							int counter = 1;
 							int diff = 0;
@@ -205,7 +220,13 @@ namespace AsposeNetCore20.Controllers
 								diff += 40;
 							}
 
+							stopwatch2.Reset();
+							stopwatch2.Start();
 							fileStamp.Save(Document_with_TOC_Heading);
+							stopwatch2.Stop();
+							Console.WriteLine("FileStamp.Save Action: " + stopwatch2.ElapsedMilliseconds.ToString());
+
+
 							fileStamp.Close();
 
 							PdfContentEditor contentEditor = new PdfContentEditor();
@@ -225,10 +246,20 @@ namespace AsposeNetCore20.Controllers
 							{
 								System.IO.File.Delete(serverDirectory + concFilename);
 							}
+
+							stopwatch2.Reset();
+							stopwatch2.Start();
+
 							contentEditor.Save(serverDirectory + concFilename);
+
+							stopwatch2.Stop();
+							Console.WriteLine("FileStamp.Save Action: " + stopwatch2.ElapsedMilliseconds.ToString());
 						}
 					}
 				}
+
+				stopwatch1.Stop();
+				Console.WriteLine("Total Time: " + stopwatch1.ElapsedMilliseconds.ToString());
 
 				return new Response()
 				{
@@ -237,6 +268,8 @@ namespace AsposeNetCore20.Controllers
 					Message = "Files Concatenated successfully to: Concatenated_Table_Of_Contents.pdf file",
 					Success = true
 				};
+
+				
 			}
 			catch(Exception ex)
 			{
@@ -251,78 +284,109 @@ namespace AsposeNetCore20.Controllers
 			
 		}
 
-		//[HttpPost]
-		//[Route("CreateFileWithNB")]
-		//public ActionResult<string> CreateFileWithNB([FromBody] Request request)
-		//{
-		//	string filename = string.IsNullOrEmpty(request.filename) ? "Nested_BookMarks_out" : request.filename;
-		//	System.IO.Directory.CreateDirectory(outputDirNestedBookmarks);
+		[HttpPost]
+		[Route("CreateFileWithNB")]
+		public ActionResult<Response> CreateFileWithNB([FromBody] Request request)
+		{
+			try
+			{
+				if (!System.IO.File.Exists(serverDirectory + request.filename)) throw new Exception("Source File does not Exist");
 
-		//	// New a object of Class PdfContentEditor
-		//	PdfContentEditor editor = new PdfContentEditor();
-		//	editor.BindPdf(outputDirNestedBookmarks + "inFile.pdf");
-		//	// Creating child items of a chapter, in this example, the first child item also include a child item.
-		//	Bookmark bm11 = new Bookmark();
-		//	// Set the action type of BookMark
-		//	bm11.Action = "GoTo";
-		//	// Set the BookMark Destination page
-		//	bm11.PageNumber = 3;
-		//	// Set the BookMark title. 
-		//	bm11.Title = "Section - 1.1.1";
+				string result = "Nested_BookMarks_out.pdf";
 
-		//	Bookmark bm1 = new Bookmark();
-		//	bm1.Action = "GoTo";
-		//	bm1.PageNumber = 2;
-		//	bm1.Title = "Section - 1.1";
+				PdfBookmarkEditor bookmarkEditor = new PdfBookmarkEditor();
+				bookmarkEditor.BindPdf(serverDirectory + request.filename);
+				// Create bookmark of all pages
+				
 
-		//	Aspose.Pdf.Facades.Bookmarks bms1 = new Aspose.Pdf.Facades.Bookmarks();
-		//	bms1.Add(bm11);
-		//	bm1.ChildItems = bms1;
+				// New a object of Class PdfContentEditor
+				PdfContentEditor editor = new PdfContentEditor();
+				editor.BindPdf(serverDirectory + request.filename);
 
-		//	// Creating a child item of a chapter.
-		//	Bookmark bm2 = new Bookmark();
-		//	bm2.Action = "GoTo";
-		//	bm2.PageNumber = 4;
-		//	bm2.Title = "Section - 1.2";
+				// Creating child items of a chapter, in this example, the first child item also include a child item.
+				Bookmark bm11 = new Bookmark();
+				// Set the action type of BookMark
+				bm11.Action = "GoTo";
+				// Set the BookMark Destination page
+				bm11.PageNumber = 3;
+				// Set the BookMark title. 
+				bm11.Title = "Section - 1.1.1";
 
-		//	// Creating a chapter (Parent Level Bookmark)
-		//	Bookmark bm = new Bookmark();
-		//	bm.Action = "GoTo";
-		//	bm.PageNumber = 1;
-		//	bm.Title = "Chapter - 1";
+				Bookmark bm1 = new Bookmark();
+				bm1.Action = "GoTo";
+				bm1.PageNumber = 2;
+				bm1.Title = "Section - 1.1";
 
-		//	Aspose.Pdf.Facades.Bookmarks bms = new Aspose.Pdf.Facades.Bookmarks();
-		//	// Add the Section - 1.1, bookmark to bookmarks collection
-		//	bms.Add(bm1);
-		//	// Add the Section - 1.2, bookmark to bookmarks collection
-		//	bms.Add(bm2);
-		//	// Add the Bookmarks collection as child_Item of Chapter_Level bookmark
-		//	bm.ChildItems = bms;
+				Aspose.Pdf.Facades.Bookmarks bms1 = new Aspose.Pdf.Facades.Bookmarks();
+				bms1.Add(bm11);
+				bm1.ChildItems = bms1;
 
-		//	// Creating a chapter (Parent Level Bookmark)
-		//	Bookmark bm_parent2 = new Bookmark();
-		//	bm_parent2.Action = "GoTo";
-		//	bm_parent2.PageNumber = 5;
-		//	bm_parent2.Title = "Chapter - 2";
+				bookmarkEditor.CreateBookmarks(bm11);
+				bookmarkEditor.CreateBookmarks(bm1);
 
-		//	// Creating a child item of a chapter.
-		//	Bookmark bm22 = new Bookmark();
-		//	bm22.Action = "GoTo";
-		//	bm22.PageNumber = 6;
-		//	bm22.Title = "Section - 2.1";
+				// Creating a child item of a chapter.
+				Bookmark bm2 = new Bookmark();
+				bm2.Action = "GoTo";
+				bm2.PageNumber = 4;
+				bm2.Title = "Section - 1.2";
 
-		//	Aspose.Pdf.Facades.Bookmarks bms_parent2 = new Aspose.Pdf.Facades.Bookmarks();
-		//	// Add the Section - 2.1, bookmark to bookmarks collection
-		//	bms_parent2.Add(bm22);
-		//	// Add the Bookmarks collection as child_Item of Chapter2_Level bookmark
-		//	bm_parent2.ChildItems = bms_parent2;
+				// Creating a chapter (Parent Level Bookmark)
+				Bookmark bm = new Bookmark();
+				bm.Action = "GoTo";
+				bm.PageNumber = 1;
+				bm.Title = "Chapter - 1";
 
-		//	// Saves the result PDF to file
-		//	editor.Save(outputDirNestedBookmarks + "Nested_BookMarks_out.pdf");
-		//	// ExEnd:CreateNestedBookmarks   
+				Aspose.Pdf.Facades.Bookmarks bms = new Aspose.Pdf.Facades.Bookmarks();
+				// Add the Section - 1.1, bookmark to bookmarks collection
+				bms.Add(bm1);
+				// Add the Section - 1.2, bookmark to bookmarks collection
+				bms.Add(bm2);
+				// Add the Bookmarks collection as child_Item of Chapter_Level bookmark
+				bm.ChildItems = bms;
 
-		//	return "";
-		//}
+				// Creating a chapter (Parent Level Bookmark)
+				Bookmark bm_parent2 = new Bookmark();
+				bm_parent2.Action = "GoTo";
+				bm_parent2.PageNumber = 5;
+				bm_parent2.Title = "Chapter - 2";
+
+				// Creating a child item of a chapter.
+				Bookmark bm22 = new Bookmark();
+				bm22.Action = "GoTo";
+				bm22.PageNumber = 6;
+				bm22.Title = "Section - 2.1";
+
+				Aspose.Pdf.Facades.Bookmarks bms_parent2 = new Aspose.Pdf.Facades.Bookmarks();
+				// Add the Section - 2.1, bookmark to bookmarks collection
+				bms_parent2.Add(bm22);
+				// Add the Bookmarks collection as child_Item of Chapter2_Level bookmark
+				bm_parent2.ChildItems = bms_parent2;
+
+				// Saves the result PDF to file
+				editor.Save(serverDirectory + result);
+
+				bookmarkEditor.Save(serverDirectory + "Output_out.pdf");
+
+				return new Response()
+				{
+					FileContent = string.Empty,
+					FileName = result,
+					Message = "File Created successfully",
+					Success = true
+				};
+			}
+			catch (Exception ex)
+			{
+				return new Response()
+				{
+					FileContent = string.Empty,
+					FileName = "",
+					Message = "Could not Create file. " + ex.Message,
+					Success = false
+				};
+			}
+
+		}
 
 	}
 }
