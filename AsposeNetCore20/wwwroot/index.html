@@ -152,25 +152,19 @@
 			</div>
 			<div class="row" style="padding-top:30px;height:130px;background-color:lightgrey">
 				<div class="col-2">
-					<p style="font-weight:bold">Upload file</p>
+					<p style="font-weight:bold">Merge Uploaded Files</p>
 				</div>
-				<div class="col-6">
-					<div class="input-group">
-						<span class="input-group-btn">
-							<span id="browseFileBtn" class="btn btn-primary" style="background-color: #1E6DFB !important;">Browse</span>
-							<input id="inputFileTxt" style="display:none" type="file">
-						</span>
-						<span class="form-control"></span>
-					</div>
+				<div class="col-4">
+					<input type="text" class="form-control" id="fileNameMerge-actv" placeholder="Destination file name" />
 				</div>
-				<div class="col-2">
-					<span id="uploadResponseMsg"></span>
-					<div id="ath-spinner-1" class="loader disp-n" style="text-align:center;margin:auto">
+				<div class="col-4">
+					<span id="concatenateResponseMsg-actv"></span>
+					<div id="ath-spinner-1-actv" class="loader disp-n" style="text-align:center;margin:auto">
 
 					</div>
 				</div>
 				<div class="col-2">
-					<button class="btn btn-primary" id="uploadFileBtn" style="width:150px;">Upload File</button>
+					<button class="btn btn-primary" id="mergeFilesBtn-actv" style="width:150px;">Merge Files</button>
 				</div>
 			</div>
 			<div class="row" style="padding-top:30px;height:130px;background-color:lightgrey">

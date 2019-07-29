@@ -3,7 +3,7 @@
 // Local: "https://localhost:44340/"   & 
 // Azure: "https://athennianasposepdftool.azurewebsites.net/"
 
-var baseUrl = "https://localhost:44340/";
+var baseUrl = "https://athennianasposepdftool.azurewebsites.net/";
 
 var targetModes = {
 	Blank: "_blank",
@@ -150,6 +150,18 @@ $(document).ready(function () {
 			filetext: fileText
 		};
 		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileSuccessClbActv);
+	});
+
+	var mergeBtn = $('#mergeFilesBtn-actv');
+	mergeBtn.click(function () {
+		showSpinner1actv();
+		var fileName = $('#fileNameMerge-actv').val();
+
+		var url = "/api/activepdf/Merge";
+		var request = {
+			filename: fileName
+		};
+		CallWS("POST", url, "json", request, "application/json;charset=utf-8", concatFileSuccessClb);
 	});
 
 	// UI events

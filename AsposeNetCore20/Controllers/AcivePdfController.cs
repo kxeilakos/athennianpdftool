@@ -84,5 +84,58 @@ namespace AsposeNetCore20.Controllers
 				};
 			}
 		}
+
+		[HttpPost]
+		[Route("Merge")]
+		public ActionResult<Response> Merge([FromBody] Request request)
+		{
+			try
+			{
+				using(APToolkitNET.Toolkit toolkit = new APToolkitNET.Toolkit())
+				{
+
+					//Set page dimensions
+					toolkit.OutputPageHeight = 792.0f;
+					toolkit.OutputPageWidth = 612.0f;
+
+					//Create new file
+					int result = toolkit.OpenOutputFile(FileName: $"{ serverDirectory}{request.filename}.pdf");
+					if (result != 0) throw new Exception($"Could not create file: {request.filename}");
+
+					string[] files = System.IO.Directory.GetFiles(serverDirectory);
+					foreach (string file in files)
+					{
+						if (file.ToLower().Contains(request.filename.ToLower())) continue;
+						if (!System.IO.Path.GetExtension(file).Equals(".pdf")) continue;
+
+						result = toolkit.MergeFile(file, 0, 0);
+						if (result != 1) throw new Exception($"Could not Merge file: {file}");
+					}
+
+					// Close the new file to complete PDF creation
+					toolkit.CloseOutputFile();
+					return new Response()
+					{
+						FileContent = string.Empty,
+						FileName = string.IsNullOrEmpty(request.filename) ? Guid.NewGuid().ToString() + ".pdf" : request.filename + ".pdf",
+						Message = "Files Merged successfully",
+						Success = true
+					};
+
+				}
+			}
+			catch(Exception ex)
+			{
+				
+				return new Response()
+				{
+					FileContent = string.Empty,
+					FileName = "",
+					Message = "Could not Merge files " + ex.Message,
+					Success = false
+				};
+				
+			}
+		}
 	}
 }
