@@ -3,7 +3,7 @@
 // Local: "https://localhost:44340/"   & 
 // Azure: "https://athennianasposepdftool.azurewebsites.net/"
 
-var baseUrl = "https://athennianasposepdftool.azurewebsites.net/";
+var baseUrl = "https://localhost:44340/";
 
 var targetModes = {
 	Blank: "_blank",
@@ -60,7 +60,7 @@ $(document).ready(function () {
 		}
 		showSpinner0();
 		setCreateResponseMessage("");
-		
+
 		var url = "/api/values/CreateFile";
 		var request = {
 			filename: fileName,
@@ -127,177 +127,196 @@ $(document).ready(function () {
 		};
 		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileBKSuccessClb);
 	});
-});
 
-// CALLBACKS
-
-     // SUCCESS CLB
-function createFileSuccessClb(response) {
-	hideSpinners();
-
-	setCreateResponseMessage(response.message);
-
-	if (response.success) {
-		var url = baseUrl + response.fileName;
-		window.open(url, targetModes.Blank);
-	} 
-}
-
-function concatFileSuccessClb(response) {
-	hideSpinners();
-	setConcatResponseMessage(response.message);
-
-	if (response.success) {
-		var url = baseUrl + response.fileName;
-		window.open(url, targetModes.Blank);
-	}
-}
-
-function uploadFileSuccessClb(response) {
-	hideSpinners();
-	setUploadResponseMessage(response.message);
-}
-
-function createFileNBSuccessClb(response) {
-	hideSpinners();
-	setCreateNBResponseMessage(response.message);
-	if (response.success) {
-		var url = baseUrl + "File_With_NB.pdf";
-		window.open(url, targetModes.Blank);
-	}
-}
-function createFileBKSuccessClb(response) {
-	hideSpinners();
-	setCreateBKResponseMessage(response.message);
-	if (response.success) {
-		var url = baseUrl + "File_With_BK.pdf";
-		window.open(url, targetModes.Blank);
-	}
-}
-     // ERROR CLB  *Not used
-function concatFileErrorClb(response) {
-	hideSpinners();
-	setConcatResponseMessage("Could not Concatenate files!");
-}
-function createFileErrorClb(response) {
-	hideSpinners();
-	setCreateResponseMessage("Could not Create File!");
-}
-function uploadFileErrorClb(response) {
-	hideSpinners();
-	setCreateResponseMessage("Could not Create File!");
-}
-function createFileNBErrorClb(response) {
-	hideSpinners();
-	setCreateNBResponseMessage("Could not Create File!");
-}
-
-// CALLWS
-function CallWS(type, url, dataType, request, contentType, callback) {
-
-	$.ajax({
-		type: type,
-		contentType: contentType,
-		url: url,
-		dataType: dataType,
-		data: JSON.stringify(request),
-		success: function (data) {
-			hideSpinners();
-			
-			if (callback) callback(data);
-		},
-		failure: function (data) {
-			hideSpinners();
-			alert("Error!");
-		},
-		error: function (data) {
-			hideSpinners();
-			alert("Error");
-		}
+	var showActivePdfBtn = $('#show-activePdf');
+	showActivePdfBtn.click(function () {
+		showActivePdfArea();
 	});
-}
 
-// SHOW / HIDE ELEMENTS
-function showSpinner0() {
-	$('#ath-spinner-0').show();
-}
-function hideSpinner0() {
-	$('#ath-spinner-0').hide();
-}
-function showSpinner1() {
-	$('#ath-spinner-1').show();
-}
-function hideSpinner1() {
-	$('#ath-spinner-1').hide();
-}
-function showSpinner2() {
-	$('#ath-spinner-2').show();
-}
-function hideSpinner2() {
-	$('#ath-spinner-2').hide();
-}
-function showSpinner3() {
-	$('#ath-spinner-3').show();
-}
-function hideSpinner3() {
-	$('#ath-spinner-3').hide();
-}
-function showSpinner4() {
-	$('#ath-spinner-4').show();
-}
-function hideSpinner4() {
-	$('#ath-spinner-4').hide();
-}
-function hideSpinners() {
-	hideSpinner0();	
-	hideSpinner1();
-	hideSpinner2();
-	hideSpinner3();
-	hideSpinner4();
-}
-function setCreateResponseMessage(message) {
-	$('#createResponseMsg').text(message);
-}
-function setUploadResponseMessage(message) {
-	$('#uploadResponseMsg').text(message);
-}
-function setConcatResponseMessage(message) {
-	$('#concatenateResponseMsg').text(message);
-}
-function setCreateNBResponseMessage(message) {
-	$('#createNBResponseMsg').text(message);
-}
-function setCreateBKResponseMessage(message) {
-	$('#createBKResponseMsg').text(message);
-}
+	var showAsposePdfBtn = $('#show-asposePdf');
+	showAsposePdfBtn.click(function () {
+		showAsposePdfArea();
+	});
 
-// HELPERS
-function GetFileName() {
-	return $('#inputFileTxt')[0].files[0];
-}
+	// CALLBACKS
 
-function uploadFile(fileName, base64CodedImg) {
-	var ready = false;
-	var check = function () {
-		if (ready === true) {
-			var type = 'POST';
-			var contentType = 'application/json';
-			var url = '/api/values/UploadFile';
-			var data = {
-				filename: fileName.name,
-				filecontent: base64CodedImg
-			};
-			var dataType = '';
-			CallWS("POST", url, "json", data, "application/json;charset=utf-8", uploadFileSuccessClb);
-			return;
+	// SUCCESS CLB
+	function createFileSuccessClb(response) {
+		hideSpinners();
+
+		setCreateResponseMessage(response.message);
+
+		if (response.success) {
+			var url = baseUrl + response.fileName;
+			window.open(url, targetModes.Blank);
 		}
-		setTimeout(check, 700);
-	};
-	check();
-	var fileReader = new FileReader();
-	fileReader.onloadend = function (evt) {
-		result = evt.target.result;
-		ready = true;
-	};
-	fileReader.readAsDataURL(fileName);
-}
+	}
+
+	function concatFileSuccessClb(response) {
+		hideSpinners();
+		setConcatResponseMessage(response.message);
+
+		if (response.success) {
+			var url = baseUrl + response.fileName;
+			window.open(url, targetModes.Blank);
+		}
+	}
+
+	function uploadFileSuccessClb(response) {
+		hideSpinners();
+		setUploadResponseMessage(response.message);
+	}
+
+	function createFileNBSuccessClb(response) {
+		hideSpinners();
+		setCreateNBResponseMessage(response.message);
+		if (response.success) {
+			var url = baseUrl + "File_With_NB.pdf";
+			window.open(url, targetModes.Blank);
+		}
+	}
+	function createFileBKSuccessClb(response) {
+		hideSpinners();
+		setCreateBKResponseMessage(response.message);
+		if (response.success) {
+			var url = baseUrl + "File_With_BK.pdf";
+			window.open(url, targetModes.Blank);
+		}
+	}
+	// ERROR CLB  *Not used
+	function concatFileErrorClb(response) {
+		hideSpinners();
+		setConcatResponseMessage("Could not Concatenate files!");
+	}
+	function createFileErrorClb(response) {
+		hideSpinners();
+		setCreateResponseMessage("Could not Create File!");
+	}
+	function uploadFileErrorClb(response) {
+		hideSpinners();
+		setCreateResponseMessage("Could not Create File!");
+	}
+	function createFileNBErrorClb(response) {
+		hideSpinners();
+		setCreateNBResponseMessage("Could not Create File!");
+	}
+
+	// CALLWS
+	function CallWS(type, url, dataType, request, contentType, callback) {
+
+		$.ajax({
+			type: type,
+			contentType: contentType,
+			url: url,
+			dataType: dataType,
+			data: JSON.stringify(request),
+			success: function (data) {
+				hideSpinners();
+
+				if (callback) callback(data);
+			},
+			failure: function (data) {
+				hideSpinners();
+				alert("Error!");
+			},
+			error: function (data) {
+				hideSpinners();
+				alert("Error");
+			}
+		});
+	}
+
+	// SHOW / HIDE ELEMENTS
+	function showSpinner0() {
+		$('#ath-spinner-0').show();
+	}
+	function hideSpinner0() {
+		$('#ath-spinner-0').hide();
+	}
+	function showSpinner1() {
+		$('#ath-spinner-1').show();
+	}
+	function hideSpinner1() {
+		$('#ath-spinner-1').hide();
+	}
+	function showSpinner2() {
+		$('#ath-spinner-2').show();
+	}
+	function hideSpinner2() {
+		$('#ath-spinner-2').hide();
+	}
+	function showSpinner3() {
+		$('#ath-spinner-3').show();
+	}
+	function hideSpinner3() {
+		$('#ath-spinner-3').hide();
+	}
+	function showSpinner4() {
+		$('#ath-spinner-4').show();
+	}
+	function hideSpinner4() {
+		$('#ath-spinner-4').hide();
+	}
+	function hideSpinners() {
+		hideSpinner0();
+		hideSpinner1();
+		hideSpinner2();
+		hideSpinner3();
+		hideSpinner4();
+	}
+	function showAsposePdfArea() {
+		$('#asposePdf-area').show();
+		$('#activePdf-area').hide();
+	}
+	function showActivePdfArea() {
+		$('#activePdf-area').show();
+		$('#asposePdf-area').hide();
+	}
+	function setCreateBKResponseMessage(message) {
+		$('#createBKResponseMsg').text(message);
+	}
+
+
+	// HELPERS
+	function GetFileName() {
+		return $('#inputFileTxt')[0].files[0];
+	}
+
+	function uploadFile(fileName, base64CodedImg) {
+		var ready = false;
+		var check = function () {
+			if (ready === true) {
+				var type = 'POST';
+				var contentType = 'application/json';
+				var url = '/api/values/UploadFile';
+				var data = {
+					filename: fileName.name,
+					filecontent: base64CodedImg
+				};
+				var dataType = '';
+				CallWS("POST", url, "json", data, "application/json;charset=utf-8", uploadFileSuccessClb);
+				return;
+			}
+			setTimeout(check, 700);
+		};
+		check();
+		var fileReader = new FileReader();
+		fileReader.onloadend = function (evt) {
+			result = evt.target.result;
+			ready = true;
+		};
+		fileReader.readAsDataURL(fileName);
+	}
+	function setCreateResponseMessage(message) {
+		$('#createResponseMsg').text(message);
+	}
+	function setUploadResponseMessage(message) {
+		$('#uploadResponseMsg').text(message);
+	}
+	function setConcatResponseMessage(message) {
+		$('#concatenateResponseMsg').text(message);
+	}
+	function setCreateNBResponseMessage(message) {
+		$('#createNBResponseMsg').text(message);
+	}
+})
