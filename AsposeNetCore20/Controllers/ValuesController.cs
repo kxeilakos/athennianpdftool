@@ -235,10 +235,20 @@ namespace AsposeNetCore20.Controllers
 
 							counter = 1;
 							diff = 0;
+							int numberOfpagesOfPreviousFile = 0;
 							foreach (System.IO.Stream stream in pdfStreams)
 							{
-								contentEditor.CreateLocalLink(new System.Drawing.Rectangle(150, 650 - diff, 100, 20), counter + 1, 1, System.Drawing.Color.Transparent);
+								if(counter == 1)
+								{
+									contentEditor.CreateLocalLink(new System.Drawing.Rectangle(150, 650 - diff, 100, 20), counter + 1, 1, System.Drawing.Color.Transparent);
+								}
+								else
+								{
+									//Replace counter with numberOfpagesOfPreviousFile of the following line to fix Link page number
+									contentEditor.CreateLocalLink(new System.Drawing.Rectangle(150, 650 - diff, 100, 20), counter + 1, 1, System.Drawing.Color.Transparent);
+								}
 								counter++;
+								numberOfpagesOfPreviousFile = new PdfFileInfo(stream).NumberOfPages;
 								diff += 40;
 							}
 
@@ -292,16 +302,10 @@ namespace AsposeNetCore20.Controllers
 			{
 				if (!System.IO.File.Exists(serverDirectory + request.filename)) throw new Exception("Source File does not Exist");
 
-				string result = "Nested_BookMarks_out.pdf";
+				string result = "File_With_NB.pdf";
 
 				PdfBookmarkEditor bookmarkEditor = new PdfBookmarkEditor();
 				bookmarkEditor.BindPdf(serverDirectory + request.filename);
-				// Create bookmark of all pages
-				
-
-				// New a object of Class PdfContentEditor
-				PdfContentEditor editor = new PdfContentEditor();
-				editor.BindPdf(serverDirectory + request.filename);
 
 				// Creating child items of a chapter, in this example, the first child item also include a child item.
 				Bookmark bm11 = new Bookmark();
@@ -312,60 +316,60 @@ namespace AsposeNetCore20.Controllers
 				// Set the BookMark title. 
 				bm11.Title = "Section - 1.1.1";
 
+				Bookmark bm12 = new Bookmark();
+				// Set the action type of BookMark
+				bm12.Action = "GoTo";
+				// Set the BookMark Destination page
+				bm12.PageNumber = 3;
+				// Set the BookMark title. 
+				bm12.Title = "Section - 2.1.1";
+
+
 				Bookmark bm1 = new Bookmark();
 				bm1.Action = "GoTo";
 				bm1.PageNumber = 2;
 				bm1.Title = "Section - 1.1";
 
+				Bookmark bm2 = new Bookmark();
+				bm2.Action = "GoTo";
+				bm2.PageNumber = 2;
+				bm2.Title = "Section - 2.1";
+
 				Aspose.Pdf.Facades.Bookmarks bms1 = new Aspose.Pdf.Facades.Bookmarks();
 				bms1.Add(bm11);
 				bm1.ChildItems = bms1;
 
-				bookmarkEditor.CreateBookmarks(bm11);
-				bookmarkEditor.CreateBookmarks(bm1);
+				Aspose.Pdf.Facades.Bookmarks bms2 = new Aspose.Pdf.Facades.Bookmarks();
+				bms2.Add(bm12);
+				bm2.ChildItems = bms2;
 
-				// Creating a child item of a chapter.
-				Bookmark bm2 = new Bookmark();
-				bm2.Action = "GoTo";
-				bm2.PageNumber = 4;
-				bm2.Title = "Section - 1.2";
+				Aspose.Pdf.Facades.Bookmarks bms0 = new Aspose.Pdf.Facades.Bookmarks();
+				bms0.Add(bm1);
+
+				Aspose.Pdf.Facades.Bookmarks bms01 = new Aspose.Pdf.Facades.Bookmarks();
+				bms01.Add(bm2);
 
 				// Creating a chapter (Parent Level Bookmark)
 				Bookmark bm = new Bookmark();
 				bm.Action = "GoTo";
 				bm.PageNumber = 1;
 				bm.Title = "Chapter - 1";
+				bm.ChildItems = bms0;
+				bookmarkEditor.CreateBookmarks(bm);
 
-				Aspose.Pdf.Facades.Bookmarks bms = new Aspose.Pdf.Facades.Bookmarks();
-				// Add the Section - 1.1, bookmark to bookmarks collection
-				bms.Add(bm1);
-				// Add the Section - 1.2, bookmark to bookmarks collection
-				bms.Add(bm2);
-				// Add the Bookmarks collection as child_Item of Chapter_Level bookmark
-				bm.ChildItems = bms;
+				bm = new Bookmark();
+				bm.Action = "GoTo";
+				bm.PageNumber = 1;
+				bm.Title = "Chapter - 2";
+				bm.ChildItems = bms01;
+				bookmarkEditor.CreateBookmarks(bm);
 
-				// Creating a chapter (Parent Level Bookmark)
-				Bookmark bm_parent2 = new Bookmark();
-				bm_parent2.Action = "GoTo";
-				bm_parent2.PageNumber = 5;
-				bm_parent2.Title = "Chapter - 2";
+				if (System.IO.File.Exists(serverDirectory + result))
+				{
+					System.IO.File.Delete(serverDirectory + result);
+				}
 
-				// Creating a child item of a chapter.
-				Bookmark bm22 = new Bookmark();
-				bm22.Action = "GoTo";
-				bm22.PageNumber = 6;
-				bm22.Title = "Section - 2.1";
-
-				Aspose.Pdf.Facades.Bookmarks bms_parent2 = new Aspose.Pdf.Facades.Bookmarks();
-				// Add the Section - 2.1, bookmark to bookmarks collection
-				bms_parent2.Add(bm22);
-				// Add the Bookmarks collection as child_Item of Chapter2_Level bookmark
-				bm_parent2.ChildItems = bms_parent2;
-
-				// Saves the result PDF to file
-				editor.Save(serverDirectory + result);
-
-				bookmarkEditor.Save(serverDirectory + "Output_out.pdf");
+				bookmarkEditor.Save(serverDirectory + result);
 
 				return new Response()
 				{
@@ -388,5 +392,47 @@ namespace AsposeNetCore20.Controllers
 
 		}
 
+		[HttpPost]
+		[Route("CreateFileWithBK")]
+		public ActionResult<Response> CreateFileWithBK([FromBody] Request request)
+		{
+			try
+			{
+				if (!System.IO.File.Exists(serverDirectory + request.filename)) throw new Exception("Source File does not Exist");
+
+				string result = "File_With_BK.pdf";
+
+				PdfBookmarkEditor bookmarkEditor = new PdfBookmarkEditor();
+				bookmarkEditor.BindPdf(serverDirectory + request.filename);
+
+				bookmarkEditor.CreateBookmarks();
+
+				if (System.IO.File.Exists(serverDirectory + result))
+				{
+					System.IO.File.Delete(serverDirectory + result);
+				}
+
+				bookmarkEditor.Save(serverDirectory + result);
+
+				return new Response()
+				{
+					FileContent = string.Empty,
+					FileName = result,
+					Message = "File Created successfully",
+					Success = true
+				};
+			}
+			catch (Exception ex)
+			{
+				return new Response()
+				{
+					FileContent = string.Empty,
+					FileName = "",
+					Message = "Could not Create file. " + ex.Message,
+					Success = false
+				};
+			}
+
+		}
 	}
 }

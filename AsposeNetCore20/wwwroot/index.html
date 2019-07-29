@@ -75,7 +75,7 @@
 		</div>
 		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
 			<div class="col-2">
-				<p style="font-weight:bold">Concatenate Uploaded Files with Table Of Contents</p>
+				<p style="font-weight:bold">Concatenate Uploaded Files <span style="font-weight:bold;color:red">with Table Of Contents</span></p>
 			</div>
 			<div class="col-4">
 				<input type="text" class="form-control disp-n" id="fileNameWithContentsConc" placeholder="Destination file name" />
@@ -92,12 +92,12 @@
 		</div>
 		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
 			<div class="col-2">
-				<p style="font-weight:bold">Create PDF file <span style="font-weight:bold;color:red">with Nested Bookmarks</span></p>
+				<p style="font-weight:bold">Create PDF file: <b>File_With_NB.pdf</b><span style="font-weight:bold;color:red"> with Nested Bookmarks</span></p>
 			</div>
-			<div class="col-4">
+			<div class="col-6">
 				<input type="text" class="form-control" id="fileNameNB" placeholder="Source file name" />
 			</div>
-			<div class="col-4">
+			<div class="col-2">
 				<span id="createNBResponseMsg"></span>
 				<div id="ath-spinner-3" class="loader disp-n" style="text-align:center;margin:auto">
 
@@ -105,6 +105,23 @@
 			</div>
 			<div class="col-2">
 				<button class="btn btn-primary" id="createNBBtn" style="width:150px;">Create File</button>
+			</div>
+		</div>
+		<div class="row" style="padding-top:30px;height:130px;background-color:lightgoldenrodyellow">
+			<div class="col-2">
+				<p style="font-weight:bold">Create PDF file: <b>File_With_BK.pdf</b><span style="font-weight:bold;color:red"> with 1 Bookmark per page</span></p>
+			</div>
+			<div class="col-6">
+				<input type="text" class="form-control" id="fileNameBK" placeholder="Source file name" />
+			</div>
+			<div class="col-2">
+				<span id="createBKResponseMsg"></span>
+				<div id="ath-spinner-4" class="loader disp-n" style="text-align:center;margin:auto">
+
+				</div>
+			</div>
+			<div class="col-2">
+				<button class="btn btn-primary" id="createBKBtn" style="width:150px;">Create File</button>
 			</div>
 		</div>
 	</div>

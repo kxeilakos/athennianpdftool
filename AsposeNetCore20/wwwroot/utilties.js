@@ -3,11 +3,7 @@
 // Local: "https://localhost:44340/"   & 
 // Azure: "https://athennianasposepdftool.azurewebsites.net/"
 
-var baseUrl = "https://localhost:44340/";
-var baseUrlUpload = "https://localhost:44340/";
-
-//var baseUrl = "https://athennianasposepdftool.azurewebsites.net/";
-//var baseUrlUpload = "https://athennianasposepdftool.azurewebsites.net/";
+var baseUrl = "https://athennianasposepdftool.azurewebsites.net/";
 
 var targetModes = {
 	Blank: "_blank",
@@ -114,6 +110,23 @@ $(document).ready(function () {
 		};
 		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileNBSuccessClb);
 	});
+
+	var createBKBtn = $('#createBKBtn');
+	createBKBtn.click(function () {
+
+		var fileName = $('#fileNameBK').val();
+		if (!fileName.length > 0) {
+			setCreateResponseMessage("File Name is Required");
+			return;
+		}
+		setCreateBKResponseMessage("");
+		showSpinner4();
+		var url = "/api/values/CreateFileWithBK";
+		var request = {
+			filename: fileName
+		};
+		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileBKSuccessClb);
+	});
 });
 
 // CALLBACKS
@@ -149,7 +162,15 @@ function createFileNBSuccessClb(response) {
 	hideSpinners();
 	setCreateNBResponseMessage(response.message);
 	if (response.success) {
-		var url = baseUrl + response.fileName;
+		var url = baseUrl + "File_With_NB.pdf";
+		window.open(url, targetModes.Blank);
+	}
+}
+function createFileBKSuccessClb(response) {
+	hideSpinners();
+	setCreateBKResponseMessage(response.message);
+	if (response.success) {
+		var url = baseUrl + "File_With_BK.pdf";
 		window.open(url, targetModes.Blank);
 	}
 }
@@ -221,11 +242,18 @@ function showSpinner3() {
 function hideSpinner3() {
 	$('#ath-spinner-3').hide();
 }
+function showSpinner4() {
+	$('#ath-spinner-4').show();
+}
+function hideSpinner4() {
+	$('#ath-spinner-4').hide();
+}
 function hideSpinners() {
 	hideSpinner0();	
 	hideSpinner1();
 	hideSpinner2();
 	hideSpinner3();
+	hideSpinner4();
 }
 function setCreateResponseMessage(message) {
 	$('#createResponseMsg').text(message);
@@ -238,6 +266,9 @@ function setConcatResponseMessage(message) {
 }
 function setCreateNBResponseMessage(message) {
 	$('#createNBResponseMsg').text(message);
+}
+function setCreateBKResponseMessage(message) {
+	$('#createBKResponseMsg').text(message);
 }
 
 // HELPERS
