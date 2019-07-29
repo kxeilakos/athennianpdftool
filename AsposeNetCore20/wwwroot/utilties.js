@@ -114,6 +114,16 @@ $(document).ready(function () {
 		};
 		CallWS("POST", url, "json", request, "application/json;charset=utf-8", createFileNBSuccessClb);
 	});
+
+	var showActivePdfBtn = $('#show-activePdf');
+	showActivePdfBtn.click(function () {
+		showActivePdfArea();
+	});
+
+	var showAsposePdfBtn = $('#show-asposePdf');
+	showAsposePdfBtn.click(function () {
+		showAsposePdfArea();
+	});
 });
 
 // CALLBACKS
@@ -227,18 +237,15 @@ function hideSpinners() {
 	hideSpinner2();
 	hideSpinner3();
 }
-function setCreateResponseMessage(message) {
-	$('#createResponseMsg').text(message);
+function showAsposePdfArea() {
+	$('#asposePdf-area').show();
+	$('#activePdf-area').hide();
 }
-function setUploadResponseMessage(message) {
-	$('#uploadResponseMsg').text(message);
+function showActivePdfArea() {
+	$('#activePdf-area').show();
+	$('#asposePdf-area').hide();
 }
-function setConcatResponseMessage(message) {
-	$('#concatenateResponseMsg').text(message);
-}
-function setCreateNBResponseMessage(message) {
-	$('#createNBResponseMsg').text(message);
-}
+
 
 // HELPERS
 function GetFileName() {
@@ -269,4 +276,16 @@ function uploadFile(fileName, base64CodedImg) {
 		ready = true;
 	};
 	fileReader.readAsDataURL(fileName);
+}
+function setCreateResponseMessage(message) {
+	$('#createResponseMsg').text(message);
+}
+function setUploadResponseMessage(message) {
+	$('#uploadResponseMsg').text(message);
+}
+function setConcatResponseMessage(message) {
+	$('#concatenateResponseMsg').text(message);
+}
+function setCreateNBResponseMessage(message) {
+	$('#createNBResponseMsg').text(message);
 }

@@ -31,3 +31,7 @@
 .disp-n{
 	display:none;
 }
+.toggle-button {
+	font-family: Segoe UI WestEuropean,Segoe UI,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+	width: 100px;
+}

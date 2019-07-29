@@ -18,4 +18,10 @@
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="APToolkitNET">
+      <HintPath>..\..\..\..\..\..\Program Files\ActivePDF\Toolkit\DotNetComponent\4.5\APToolkitNET.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
