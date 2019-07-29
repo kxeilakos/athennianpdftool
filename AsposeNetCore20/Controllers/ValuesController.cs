@@ -14,27 +14,7 @@ namespace AsposeNetCore20.Controllers
 	[ApiController]
 	public class ValuesController : ControllerBase
 	{
-		private const string outputDir = @"C:\AsposePDF\Files\";
-		private const string outputConcDir = @"C:\AsposePDF\Concatenated\";
-		private const string outputDirNestedBookmarks = @"C:\AsposePDF\NestedBookmarks\";
-
 		private const string serverDirectory = @"wwwroot\";
-
-		// GET api/values
-		//[HttpGet]
-		//public ActionResult<string> Get()
-		//{
-		//	return "File Created";
-		//}
-
-		//// GET api/values/5
-		//[HttpGet("{id}")]
-		//public ActionResult<string> Get(int id)
-		//{
-		//	return "value";
-		//}
-
-		// POST api/values
 
 		[HttpPost]
 		[Route("CreateFile")]
