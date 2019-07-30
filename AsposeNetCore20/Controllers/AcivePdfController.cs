@@ -137,5 +137,68 @@ namespace AsposeNetCore20.Controllers
 				
 			}
 		}
+
+		[HttpPost]
+		[Route("CreateSampleBookmarks")]
+		public ActionResult<Response> CreateSampleBookmarks([FromBody] Request request)
+		{
+			try
+			{
+				using (APToolkitNET.Toolkit toolkit = new APToolkitNET.Toolkit())
+				{
+
+					//Set page dimensions
+					toolkit.OutputPageHeight = 792.0f;
+					toolkit.OutputPageWidth = 612.0f;
+
+					//Create new file
+					int result = toolkit.OpenOutputFile(FileName: $"{ serverDirectory}{request.filename}.pdf");
+					if (result != 0) throw new Exception($"Could not create file: {request.filename}");
+
+
+					toolkit.OpenInputFile("Athennian Consulting Agreement - Cheilakos Konstantinos Leonidas.pdf");
+
+					APToolkitNET.BookmarkManager bookmarkManager = toolkit.GetBookmarkManager();
+					APToolkitNET.Bookmark root = bookmarkManager.MakeRoot("Table of Contents", "red", APToolkitNET.FontStyle.Bold);
+
+					var section1 = bookmarkManager.AddChild(root, "Section 1");
+					section1.SetInternalLink(1, 0, 0);
+					var section11 = bookmarkManager.AddChild(section1, "Section 1.1");
+					section11.SetInternalLink(2, 0, 0);
+					var section111 = bookmarkManager.AddChild(section1, "Section 1.1.1");
+					section11.SetInternalLink(3, 0, 0);
+
+					var section2 = bookmarkManager.AddChild(root, "Section 2");
+					section1.SetInternalLink(4, 0, 0);
+					var section21 = bookmarkManager.AddChild(section1, "Section 2.1");
+					section11.SetInternalLink(5, 0, 0);
+					var section211 = bookmarkManager.AddChild(section1, "Section 2.1.1");
+					section11.SetInternalLink(6, 0, 0);
+
+					// Close the new file to complete PDF creation
+					toolkit.CloseOutputFile();
+					return new Response()
+					{
+						FileContent = string.Empty,
+						FileName = string.IsNullOrEmpty(request.filename) ? Guid.NewGuid().ToString() + ".pdf" : request.filename + ".pdf",
+						Message = "Files Merged successfully",
+						Success = true
+					};
+
+				}
+			}
+			catch (Exception ex)
+			{
+
+				return new Response()
+				{
+					FileContent = string.Empty,
+					FileName = "",
+					Message = "Could not Create Sample Bookmarks " + ex.Message,
+					Success = false
+				};
+
+			}
+		}
 	}
 }

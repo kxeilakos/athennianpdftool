@@ -164,6 +164,18 @@ $(document).ready(function () {
 		CallWS("POST", url, "json", request, "application/json;charset=utf-8", concatFileSuccessClb);
 	});
 
+	var bookmarksBtn = $('#bookmarksBtn-actv');
+	mergeBbookmarksBtntn.click(function () {
+		showSpinner2actv();
+		var fileName = $('#fileNameWithBookmarks-actv').val();
+
+		var url = "/api/activepdf/CreateSampleBookmarks";
+		var request = {
+			filename: fileName
+		};
+		CallWS("POST", url, "json", request, "application/json;charset=utf-8", FileSuccessClb);
+	});
+
 	// UI events
 	var showActivePdfBtn = $('#show-activePdf');
 	showActivePdfBtn.click(function () {
