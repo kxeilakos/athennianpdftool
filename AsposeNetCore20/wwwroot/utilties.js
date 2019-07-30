@@ -3,7 +3,7 @@
 // Local: "https://localhost:44340/"   & 
 // Azure: "https://athennianasposepdftool.azurewebsites.net/"
 
-var baseUrl = "https://athennianasposepdftool.azurewebsites.net/";
+var baseUrl = "https://localhost:44340/";
 
 var targetModes = {
 	Blank: "_blank",
@@ -161,7 +161,7 @@ $(document).ready(function () {
 		var request = {
 			filename: fileName
 		};
-		CallWS("POST", url, "json", request, "application/json;charset=utf-8", concatFileSuccessClb);
+		CallWS("POST", url, "json", request, "application/json;charset=utf-8", mergeFileSuccessClb);
 	});
 
 	var bookmarksBtn = $('#bookmarksBtn-actv');
@@ -223,6 +223,16 @@ $(document).ready(function () {
 		}
 	}
 
+	function  mergeFileSuccessClb(response) {
+		hideActiveSpinners();
+		setConcatResponseMessageActv(response.message);
+
+		if (response.success) {
+			var url = baseUrl + response.fileName;
+			window.open(url, targetModes.Blank);
+		}
+	}
+
 	function uploadFileSuccessClb(response) {
 		hideAsposeSpinners();
 		setUploadResponseMessage(response.message);
@@ -273,17 +283,17 @@ $(document).ready(function () {
 			data: JSON.stringify(request),
 			success: function (data) {
 				hideAsposeSpinners();
-				hideActiveSpinners()
+				hideActiveSpinners();
 				if (callback) callback(data);
 			},
 			failure: function (data) {
 				hideAsposeSpinners();
-				hideActiveSpinners()
+				hideActiveSpinners();
 				alert("Error!");
 			},
 			error: function (data) {
 				hideAsposeSpinners();
-				hideActiveSpinners()
+				hideActiveSpinners();
 				alert("Error");
 			}
 		});
