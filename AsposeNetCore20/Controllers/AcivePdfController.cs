@@ -152,13 +152,23 @@ namespace AsposeNetCore20.Controllers
 					toolkit.OutputPageWidth = 612.0f;
 
 					//Create new file
-					int result = toolkit.OpenOutputFile(FileName: $"{ serverDirectory}{request.filename}.pdf");
-					if (result != 0) throw new Exception($"Could not create file: {request.filename}");
+					int result = toolkit.OpenOutputFile(FileName: $"{serverDirectory}SampleBookmarks.pdf");
+					if (result != 0) throw new Exception($"Could not create destination file: SampleBookmarks.pdf");
+					
+					// Open Source File
+					result =  toolkit.OpenInputFile($"{ serverDirectory}{request.filename}.pdf");
+					if (result != 0) throw new Exception($"Could not Open file: {request.filename}");
 
+					// Add new page to output
+					toolkit.NewPage();
+					toolkit.SetFont(FontName: "Arial", FontSize: 20);
+					toolkit.PrintText(X: 72.0f, Y: 720.0f, Text: "Table of Contents");
+					toolkit.AddInternalLink(1, 72, 720, 72, 720, 5, 72, 720, 4);
 
-					toolkit.OpenInputFile("Athennian Consulting Agreement - Cheilakos Konstantinos Leonidas.pdf");
+					//toolkit.AddInternalLinkBookmark("Section 1", 2, 0, 0);
 
 					APToolkitNET.BookmarkManager bookmarkManager = toolkit.GetBookmarkManager();
+					bookmarkManager.CopyBookmarks = true;
 					APToolkitNET.Bookmark root = bookmarkManager.MakeRoot("Table of Contents", "red", APToolkitNET.FontStyle.Bold);
 
 					var section1 = bookmarkManager.AddChild(root, "Section 1");
@@ -169,19 +179,22 @@ namespace AsposeNetCore20.Controllers
 					section11.SetInternalLink(3, 0, 0);
 
 					var section2 = bookmarkManager.AddChild(root, "Section 2");
-					section1.SetInternalLink(4, 0, 0);
-					var section21 = bookmarkManager.AddChild(section1, "Section 2.1");
-					section11.SetInternalLink(5, 0, 0);
-					var section211 = bookmarkManager.AddChild(section1, "Section 2.1.1");
-					section11.SetInternalLink(6, 0, 0);
+					section2.SetInternalLink(4, 0, 0);
+					var section21 = bookmarkManager.AddChild(section2, "Section 2.1");
+					section21.SetInternalLink(5, 0, 0);
+					var section211 = bookmarkManager.AddChild(section2, "Section 2.1.1");
+					section211.SetInternalLink(6, 0, 0);
 
 					// Close the new file to complete PDF creation
+					toolkit.CopyForm(0, 0);
+					toolkit.CloseInputFile();
 					toolkit.CloseOutputFile();
+
 					return new Response()
 					{
 						FileContent = string.Empty,
-						FileName = string.IsNullOrEmpty(request.filename) ? Guid.NewGuid().ToString() + ".pdf" : request.filename + ".pdf",
-						Message = "Files Merged successfully",
+						FileName = "SampleBookmarks.pdf",
+						Message = "File SampleBookmarks.pdf created successfully",
 						Success = true
 					};
 

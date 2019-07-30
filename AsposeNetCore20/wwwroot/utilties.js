@@ -155,6 +155,8 @@ $(document).ready(function () {
 	var mergeBtn = $('#mergeFilesBtn-actv');
 	mergeBtn.click(function () {
 		showSpinner1actv();
+		setMergeResponseMessageActv("");
+
 		var fileName = $('#fileNameMerge-actv').val();
 
 		var url = "/api/activepdf/Merge";
@@ -165,15 +167,22 @@ $(document).ready(function () {
 	});
 
 	var bookmarksBtn = $('#bookmarksBtn-actv');
-	mergeBbookmarksBtntn.click(function () {
+	bookmarksBtn.click(function () {
 		showSpinner2actv();
+		setBookmarksResponseMessageActv("");
+
 		var fileName = $('#fileNameWithBookmarks-actv').val();
+
+		if (!fileName.length > 0) {
+			setBookmarksResponseMessageActv("File Name is Required");
+			return;
+		}
 
 		var url = "/api/activepdf/CreateSampleBookmarks";
 		var request = {
 			filename: fileName
 		};
-		CallWS("POST", url, "json", request, "application/json;charset=utf-8", FileSuccessClb);
+		CallWS("POST", url, "json", request, "application/json;charset=utf-8", bookmarksFileSuccessClb);
 	});
 
 	// UI events
@@ -225,7 +234,17 @@ $(document).ready(function () {
 
 	function  mergeFileSuccessClb(response) {
 		hideActiveSpinners();
-		setConcatResponseMessageActv(response.message);
+		setMergeResponseMessageActv(response.message);
+
+		if (response.success) {
+			var url = baseUrl + response.fileName;
+			window.open(url, targetModes.Blank);
+		}
+	}
+
+	function bookmarksFileSuccessClb(response) {
+		hideActiveSpinners();
+		setBookmarksResponseMessageActv(response.message);
 
 		if (response.success) {
 			var url = baseUrl + response.fileName;

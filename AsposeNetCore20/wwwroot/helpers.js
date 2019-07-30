@@ -108,11 +108,11 @@ function GetFileName() {
 function setCreateResponseMessageActv(message) {
 	$('#createResponseMsg-actv').text(message);
 }
-function setUploadResponseMessageActv(message) {
-	$('#uploadResponseMsg-actv').text(message);
+function setMergeResponseMessageActv(message) {
+	$('#mergeResponseMsg-actv').text(message);
 }
-function setConcatResponseMessageActv(message) {
-	$('#concatenateResponseMsg-actv').text(message);
+function setBookmarksResponseMessageActv(message) {
+	$('#bookmarksResponseMsg-actv').text(message);
 }
 function setCreateNBResponseMessageActv(message) {
 	$('#createNBResponseMsg-actv').text(message);
